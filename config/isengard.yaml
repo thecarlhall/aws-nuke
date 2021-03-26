@@ -1,32 +1,32 @@
 ---
 regions:
 - global    # This is for all global resource types e.g. IAM
-- us-east-2
+#- us-east-2
 - us-east-1
-- us-east-1-bos-1a
-- us-east-1-iah-1a
-- us-east-1-mia-1a
-- us-west-1
-- us-west-2
-- us-west-2-lax-1a
-- us-west-2-lax-1b
-- af-south-1
-- ap-east-1
-- ap-south-1
-- ap-northeast-3
-- ap-northeast-2
-- ap-southeast-1
-- ap-southeast-2
-- ap-northeast-1
-- ca-central-1
-- eu-central-1
-- eu-west-1
-- eu-west-2
-- eu-south-1
-- eu-west-3
-- eu-north-1
-- me-south-1
-- sa-east-1
+#- us-east-1-bos-1a
+#- us-east-1-iah-1a
+#- us-east-1-mia-1a
+#- us-west-1
+#- us-west-2
+#- us-west-2-lax-1a
+#- us-west-2-lax-1b
+#- af-south-1
+#- ap-east-1
+#- ap-south-1
+#- ap-northeast-3
+#- ap-northeast-2
+#- ap-southeast-1
+#- ap-southeast-2
+#- ap-northeast-1
+#- ca-central-1
+#- eu-central-1
+#- eu-west-1
+#- eu-west-2
+#- eu-south-1
+#- eu-west-3
+#- eu-north-1
+#- me-south-1
+#- sa-east-1
 
 account-blocklist:
 - 1234567890
@@ -35,6 +35,48 @@ accounts:
   __default__:
     filters:
       IAMRole:
-      - property: Name
-        type: regex
-        value: "(?i)(^do-not-delete|do-not-delete$)"
+      - type: set-to-exact
+        value: "NAME OF ROLE TO KEEP FROM ISENGARD"
+      - type: exact
+        value: nova
+      - type: contains
+        value: AwsSecurity
+      - type: exact
+        value: EC2CapacityReservationService
+      - type: contains
+        value: GatedGarden
+      - type: contains
+        value: InternalAudit
+      - type: contains
+        value: Isengard
+      - type: contains
+        value: ShadowTrooper
+      - type: regex
+        value: "(?i)do-not-delete"
+      IAMInstanceProfileRole:
+      - type: regex
+        value: "(?i)do-not-delete"
+      IAMInstanceProfile:
+      - type: regex
+        value: "(?i)do-not-delete"
+      IAMRolePolicyAttachment:
+      - type: regex
+        value: "(?i)do-not-delete"
+      IAMRolePolicy:
+      - type: regex
+        value: "(?i)do-not-delete"
+      CloudTrailTrail:
+      - type: regex
+        value: "(?i)do-not-delete"
+      CloudWatchEventsRule:
+      - type: regex
+        value: "(?i)do-not-delete"
+      CloudWatchEventsTarget:
+      - type: regex
+        value: "(?i)do-not-delete"
+      S3Bucket:
+      - type: regex
+        value: "(?i)do-not-delete"
+      S3Object:
+      - type: regex
+        value: "(?i)do-not-delete"

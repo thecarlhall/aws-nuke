@@ -33,11 +33,6 @@ func NewNuke(params NukeParameters, account awsutil.Account) *Nuke {
 func (n *Nuke) Run() error {
 	var err error
 
-	if n.Parameters.ForceSleep < 3 {
-		return fmt.Errorf("Value for --force-sleep cannot be less than 3 seconds. This is for your own protection.")
-	}
-	forceSleep := time.Duration(n.Parameters.ForceSleep) * time.Second
-
 	fmt.Printf("aws-nuke version %s - %s - %s\n\n", BuildVersion, BuildDate, BuildHash)
 
 	err = n.Config.ValidateAccount(n.Account.ID(), n.Account.Aliases())
@@ -45,18 +40,7 @@ func (n *Nuke) Run() error {
 		return err
 	}
 
-	fmt.Printf("Do you really want to nuke the account with "+
-		"the ID %s and the alias '%s'?\n", n.Account.ID(), n.Account.Alias())
-	if n.Parameters.Force {
-		fmt.Printf("Waiting %v before continuing.\n", forceSleep)
-		time.Sleep(forceSleep)
-	} else {
-		fmt.Printf("Do you want to continue? Enter account alias to continue.\n")
-		err = Prompt(n.Account.Alias())
-		if err != nil {
-			return err
-		}
-	}
+	fmt.Printf("Nuking the account with the ID %s and the alias '%s'.\n", n.Account.ID(), n.Account.Alias())
 
 	err = n.Scan()
 	if err != nil {
@@ -73,18 +57,7 @@ func (n *Nuke) Run() error {
 		return nil
 	}
 
-	fmt.Printf("Do you really want to nuke these resources on the account with "+
-		"the ID %s and the alias '%s'?\n", n.Account.ID(), n.Account.Alias())
-	if n.Parameters.Force {
-		fmt.Printf("Waiting %v before continuing.\n", forceSleep)
-		time.Sleep(forceSleep)
-	} else {
-		fmt.Printf("Do you want to continue? Enter account alias to continue.\n")
-		err = Prompt(n.Account.Alias())
-		if err != nil {
-			return err
-		}
-	}
+	fmt.Printf("Nuking the resources on the account with the ID %s and the alias '%s'?\n", n.Account.ID(), n.Account.Alias())
 
 	failCount := 0
 	waitingCount := 0
