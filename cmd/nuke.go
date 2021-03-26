@@ -135,19 +135,28 @@ func (n *Nuke) Run() error {
 }
 
 func (n *Nuke) Scan() error {
-	accountConfig := n.Config.Accounts[n.Account.ID()]
+	targets := types.Collection{}
+	excludes := types.Collection{}
+
+	if acctCfg, ok := n.Config.Accounts[n.Account.ID()]; ok {
+		targets = acctCfg.ResourceTypes.Targets
+		excludes = acctCfg.ResourceTypes.Excludes
+	} else if defaultCfg, ok := n.Config.Accounts["__default__"]; ok {
+		targets = defaultCfg.ResourceTypes.Targets
+		excludes = defaultCfg.ResourceTypes.Excludes
+	}
 
 	resourceTypes := ResolveResourceTypes(
 		resources.GetListerNames(),
 		[]types.Collection{
 			n.Parameters.Targets,
 			n.Config.ResourceTypes.Targets,
-			accountConfig.ResourceTypes.Targets,
+			targets,
 		},
 		[]types.Collection{
 			n.Parameters.Excludes,
 			n.Config.ResourceTypes.Excludes,
-			accountConfig.ResourceTypes.Excludes,
+			excludes,
 		},
 	)
 

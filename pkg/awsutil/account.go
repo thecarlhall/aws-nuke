@@ -74,6 +74,9 @@ func (a *Account) ID() string {
 }
 
 func (a *Account) Alias() string {
+	if len(a.aliases) == 0 {
+		return ""
+	}
 	return a.aliases[0]
 }
 

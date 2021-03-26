@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"strings"
 
 	"github.com/rebuy-de/aws-nuke/pkg/types"
 
@@ -122,40 +121,29 @@ func (c *Nuke) ValidateAccount(accountID string, aliases []string) error {
 			"but it is blocklisted. Aborting.", accountID)
 	}
 
-	if len(aliases) == 0 {
-		return fmt.Errorf("The specified account doesn't have an alias. " +
-			"For safety reasons you need to specify an account alias. " +
-			"Your production account should contain the term 'prod'.")
-	}
-
-	for _, alias := range aliases {
-		if strings.Contains(strings.ToLower(alias), "prod") {
-			return fmt.Errorf("You are trying to nuke an account with the alias '%s', "+
-				"but it has the substring 'prod' in it. Aborting.", alias)
-		}
-	}
-
-	if _, ok := c.Accounts[accountID]; !ok {
-		return fmt.Errorf("Your account ID '%s' isn't listed in the config. "+
-			"Aborting.", accountID)
-	}
-
 	return nil
 }
 
 func (c *Nuke) Filters(accountID string) (Filters, error) {
-	account := c.Accounts[accountID]
-	filters := account.Filters
+	var filters Filters
+	var presets []string
+	if account, ok := c.Accounts[accountID]; ok {
+		filters = account.Filters
+		presets = account.Presets
+	} else if defaults, ok := c.Accounts["__default__"]; ok {
+		filters = defaults.Filters
+		presets = defaults.Presets
+	}
 
 	if filters == nil {
 		filters = Filters{}
 	}
 
-	if account.Presets == nil {
+	if presets == nil {
 		return filters, nil
 	}
 
-	for _, presetName := range account.Presets {
+	for _, presetName := range presets {
 		notFound := fmt.Errorf("Could not find filter preset '%s'", presetName)
 		if c.Presets == nil {
 			return nil, notFound
